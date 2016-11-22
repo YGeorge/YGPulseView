@@ -9,14 +9,21 @@
 #import "UIView+YGPulseView.h"
 
 NSString *const YGPulseKey = @"YGPulseKey";
+NSString *const YGRadarKey = @"YGRadarKey";
 
 @implementation UIView (YGPulseView)
 
 - (void)startPulseWithColor:(UIColor *)color {
-    [self startPulseWithColor:color scaleFrom:1.2f to:1.4f frequency:1.0f opacity:0.7f];
+    [self startPulseWithColor:color scaleFrom:1.2f to:1.4f frequency:1.0f opacity:0.7f animation:YGPulseViewAnimationTypeRegularPulsing];
 }
 
-- (void)startPulseWithColor:(UIColor *)color scaleFrom:(CGFloat)initialScale to:(CGFloat)finishScale frequency:(CGFloat)frequency opacity:(CGFloat)opacity {
+- (void)startPulseWithColor:(UIColor *)color animation:(YGPulseViewAnimationType)animationType {
+    CGFloat frequency = animationType == YGPulseViewAnimationTypeRadarPulsing ? 1.5f : 1.0f;
+    CGFloat startScale = animationType == YGPulseViewAnimationTypeRadarPulsing ? 1.0f : 1.2f;
+    [self startPulseWithColor:color scaleFrom:startScale to:1.4f frequency:frequency opacity:0.7f animation:animationType];
+}
+
+- (void)startPulseWithColor:(UIColor *)color scaleFrom:(CGFloat)initialScale to:(CGFloat)finishScale frequency:(CGFloat)frequency opacity:(CGFloat)opacity animation:(YGPulseViewAnimationType)animationType {
     CALayer *externalBorder = [CALayer layer];
     externalBorder.frame = self.frame;
     externalBorder.cornerRadius = self.layer.cornerRadius;
@@ -25,14 +32,23 @@ NSString *const YGPulseKey = @"YGPulseKey";
     self.layer.masksToBounds = NO;
     [self.layer.superlayer insertSublayer:externalBorder below:self.layer];
 
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-    animation.fromValue = @(initialScale);
-    animation.toValue = @(finishScale);
-    animation.duration = frequency;
-    animation.autoreverses = YES;
-    animation.repeatCount = INT32_MAX;
+    CABasicAnimation *scaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    scaleAnimation.fromValue = @(initialScale);
+    scaleAnimation.toValue = @(finishScale);
+    scaleAnimation.duration = frequency;
+    scaleAnimation.autoreverses = animationType == YGPulseViewAnimationTypeRegularPulsing;
+    scaleAnimation.repeatCount = INT32_MAX;
+    [externalBorder addAnimation:scaleAnimation forKey:YGPulseKey];
 
-    [externalBorder addAnimation:animation forKey:YGPulseKey];
+    if (animationType == YGPulseViewAnimationTypeRadarPulsing) {
+        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        opacityAnimation.fromValue = @(opacity);
+        opacityAnimation.toValue = @(0.0);
+        opacityAnimation.duration = frequency;
+        opacityAnimation.autoreverses = NO;
+        opacityAnimation.repeatCount = INT32_MAX;
+        [externalBorder addAnimation:opacityAnimation forKey:YGRadarKey];
+    }
 }
 
 @end
