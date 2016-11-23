@@ -23,4 +23,6 @@ typedef NS_ENUM(NSUInteger, YGPulseViewAnimationType) {
 
 - (void)startPulseWithColor:(UIColor *)color scaleFrom:(CGFloat)initialScale to:(CGFloat)finishScale frequency:(CGFloat)frequency opacity:(CGFloat)opacity animation:(YGPulseViewAnimationType)animationType;
 
+- (void)stopPulse;
+
 @end

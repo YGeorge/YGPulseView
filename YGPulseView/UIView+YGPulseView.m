@@ -10,6 +10,7 @@
 
 NSString *const YGPulseKey = @"YGPulseKey";
 NSString *const YGRadarKey = @"YGRadarKey";
+NSString *const YGLayerName = @"YGLayerName";
 
 @implementation UIView (YGPulseView)
 
@@ -29,6 +30,7 @@ NSString *const YGRadarKey = @"YGRadarKey";
     externalBorder.cornerRadius = self.layer.cornerRadius;
     externalBorder.backgroundColor = color.CGColor;
     externalBorder.opacity = opacity;
+    externalBorder.name = YGLayerName;
     self.layer.masksToBounds = NO;
     [self.layer.superlayer insertSublayer:externalBorder below:self.layer];
 
@@ -49,6 +51,24 @@ NSString *const YGRadarKey = @"YGRadarKey";
         opacityAnimation.repeatCount = INT32_MAX;
         [externalBorder addAnimation:opacityAnimation forKey:YGRadarKey];
     }
+}
+
+- (void)stopPulse {
+    [self.layer removeAnimationForKey:YGPulseKey];
+    [self.layer removeAnimationForKey:YGRadarKey];
+    CALayer *externalBorderLayer = [self externalBorderLayer];
+    if (externalBorderLayer) {
+        [externalBorderLayer removeFromSuperlayer];
+    }
+}
+
+- (CALayer *)externalBorderLayer {
+    for (CALayer *layer in self.layer.superlayer.sublayers) {
+        if ([layer.name isEqualToString:YGLayerName]) {
+            return layer;
+        }
+    }
+    return nil;
 }
 
 @end
