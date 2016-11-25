@@ -10,14 +10,12 @@ YGPulseView is Objective-C Category for making pulsing animation with UIView:
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.buttonOne.layer.cornerRadius = 34;
-    self.buttonTwo.layer.cornerRadius = 34;
+    self.plusView.layer.cornerRadius = 30;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.buttonOne startPulseWithColor:[UIColor greenColor] animation:YGPulseViewAnimationTypeRegularPulsing];
-    [self.buttonTwo startPulseWithColor:[UIColor greenColor] animation:YGPulseViewAnimationTypeRadarPulsing];
+    [self.plusView startPulseWithColor:[UIColor greenColor] animation:YGPulseViewAnimationTypeRadarPulsing];
 }
 
 ```
